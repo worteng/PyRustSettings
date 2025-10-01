@@ -1,0 +1,17 @@
+client.clampscreenshake 1
+input.holdtime 0.1
+hitnotify.notification_level 2
+client.bag_unclaim_duration 0
+strobelight.forceoff 1
+effects.maxgibdist 1
+effects.maxgiblife 1
+console.erroroverlay 1
+gametip.server_event_tips 0
+legs.enablelegs 0
+gesturecollection.showadmincinematicgesturesinbindings
+inventory.quickcraftdelay 0
+graphics.vm_fov_scale 0
+effects.showoutlines 1
+player.footik 0
+sss.enabled 0
+input.autocrouch 1

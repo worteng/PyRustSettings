@@ -1,82 +1,189 @@
 {
-  "Жесты администратора": {
-    "description": "Показывает специальные жесты для администраторов.",
-    "preview": "admingestures.mp4"
+  "Ограничить тряску экрана": {
+    "description": "Уменьшает или отключает тряску камеры при взрывах.",
+    "preview": "bombshake.mp4",
+    "type": "bool",
+    "file": "client",
+    "key": "client.clampscreenshake",
+    "true_value": "1",
+    "false_value": "0",
+    "default": "0",
+    "best": "1"
   },
-  "Автоприсед при беге": {
-    "description": "Автоматически приседает при беге для снижения шума.",
-    "preview": "autocrouch.mp4"
+  "Уменьшение задержки меню": {
+    "description": "Уменьшает задержку круглого меню",
+    "preview": "holdtime.mp4",
+    "type": "bool",
+    "file": "client",
+    "key": "input.holdtime",
+    "true_value": "0.1",
+    "false_value": "0.3",
+    "default": "0.3",
+    "best": "0.1"
   },
-  "Тряска от взрыва": {
-    "description": "Эффект тряски экрана при взрыве рядом.",
-    "preview": "bombshake.mp4"
+  "Точный показ хитов": {
+    "description": "Показывает обработанные сервером хиты",
+    "preview": "hitmarker.mp4",
+    "type": "bool",
+    "file": "client",
+    "key": "hitnotify.notification_level",
+    "true_value": "2",
+    "false_value": "1",
+    "default": "1",
+    "best": "2"
   },
-  "Ошибки в консоли": {
-    "description": "Отображает ошибки и предупреждения в консоли игры.",
-    "preview": "consoleerror.mp4"
-  },
-  "Быстрое крафтинг": {
-    "description": "Ускоряет процесс создания предметов.",
-    "preview": "craftfast.mp4"
-  },
-  "Фокус на карте": {
-    "description": "Автоматически фокусируется на карте при открытии.",
-    "preview": "focusmap.mp4"
-  },
-  "FootIK (естественная постановка ног)": {
-    "description": "Корректирует положение ног персонажа на неровной поверхности.",
-    "preview": "footik.mp4"
-  },
-  "Качание головы при ходьбе": {
-    "description": "Добавляет реалистичное покачивание камеры при движении.",
-    "preview": "headbob.mp4"
-  },
-  "Маркер попадания": {
-    "description": "Визуальный и звуковой индикатор при попадании в цель.",
-    "preview": "hitmarker.mp4"
-  },
-  "Время удержания предмета": {
-    "description": "Увеличивает время, в течение которого предмет остаётся в руках после подбора.",
-    "preview": "holdtime.mp4"
-  },
-  "Удар при повреждении": {
-    "description": "Эффект удара или отдачи при получении урона.",
-    "preview": "hurt punch.mp4"
-  },
-  "Impostor-режим": {
-    "description": "Активирует визуальные эффекты, имитирующие режим 'среди нас'.",
-    "preview": "impostror.mp4"
-  },
-  "Отключить ноги": {
-    "description": "Полностью скрывает модель ног персонажа.",
-    "preview": "legsoff.mp4"
-  },
-  "Макс. время жизни гибов": {
-    "description": "Ограничивает, как долго видны частицы разрушения объектов.",
-    "preview": "maxbgiblife.mp4"
-  },
-  "Макс. дистанция хибов": {
-    "description": "Определяет, на каком расстоянии отображаются эффекты попаданий.",
-    "preview": "maxhibdist.mp4"
-  },
-  "Контурные обводки": {
-    "description": "Добавляет обводку вокруг объектов для лучшей видимости.",
-    "preview": "outlines.mp4"
-  },
-  "Подсказки событий сервера": {
-    "description": "Показывает уведомления о событиях на сервере (например, рейды).",
-    "preview": "servereventtips.mp4"
-  },
-  "SSS-эффект": {
-    "description": "Специальный визуальный эффект (например, screen space scattering).",
-    "preview": "sss.mp4"
+  "Быстрое удаление спалки": {
+    "description": "Уменьшает кд удаления с 2 до 0",
+    "preview": "",
+    "type": "bool",
+    "file": "client",
+    "key": "client.bag_unclaim_duration",
+    "true_value": "0",
+    "false_value": "2",
+    "default": "2",
+    "best": "0"
   },
   "Отключить стробоскопы": {
-    "description": "Убирает мигающие световые эффекты (strobelights).",
-    "preview": "strobosckope.mp4"
+    "description": "Полностью отключает стробоскопические эффекты (полезно при эпилепсии).",
+    "preview": "strobosckope.mp4",
+    "type": "bool",
+    "file": "client",
+    "key": "strobelight.forceoff",
+    "true_value": "1",
+    "false_value": "0",
+    "default": "0",
+    "best": "1"
   },
-  "Масштаб FOV оружия": {
-    "description": "Регулирует поле зрения модели оружия в руках.",
-    "preview": "vm_fov_scale.mp4"
+  "Минимум гибов": {
+    "description": "Уменьшает количество частиц и обломков при разрушениях.",
+    "preview": "maxhibdist.mp4",
+    "type": "bool",
+    "file": "client",
+    "key": "effects.maxgibdist",
+    "true_value": "1",
+    "false_value": "100",
+    "default": "100",
+    "best": "1"
+  },
+  "Короткая жизнь гибов": {
+    "description": "Обломки исчезают почти мгновенно.",
+    "preview": "maxbgiblife.mp4",
+    "type": "bool",
+    "file": "client",
+    "key": "effects.maxgiblife",
+    "true_value": "1",
+    "false_value": "10",
+    "default": "10",
+    "best": "1"
+  },
+  "Скрыть оверлей ошибок": {
+    "description": "Отключает красный оверлей при ошибках скриптов.",
+    "preview": "consoleerror.mp4",
+    "type": "bool",
+    "file": "client",
+    "key": "console.erroroverlay",
+    "true_value": "False",
+    "false_value": "True",
+    "default": "True",
+    "best": "False"
+  },
+  "Отключить ивенты сервера": {
+    "description": "Скрывает игровые подсказки от сервера (серверные ивенты).",
+    "preview": "servereventtips.mp4",
+    "type": "bool",
+    "file": "client",
+    "key": "gametip.server_event_tips",
+    "true_value": "0",
+    "false_value": "1",
+    "default": "1",
+    "best": "0"
+  },
+  "Отключить показ ног": {
+    "description": "Отключает показ ног персонажа.",
+    "preview": "legsoff.mp4",
+    "type": "bool",
+    "file": "client",
+    "key": "legs.enablelegs",
+    "true_value": "False",
+    "false_value": "True",
+    "default": "True",
+    "best": "False"
+  },
+  "Жесты администратора": {
+    "description": "Показывает специальные жесты для администраторов.",
+    "preview": "admingestures.mp4",
+    "type": "bool",
+    "file": "client",
+    "key": "gesturecollection.showadmincinematicgesturesinbindings",
+    "true_value": "True",
+    "false_value": "False",
+    "default": "False",
+    "best": "True"
+  },
+  "Мгновенный крафт": {
+    "description": "Убирает задержку при быстром крафте.",
+    "preview": "craftfast.mp4",
+    "type": "bool",
+    "file": "client",
+    "key": "inventory.quickcraftdelay",
+    "true_value": "0",
+    "false_value": "0.2",
+    "default": "0.2",
+    "best": "0"
+  },
+  "Длинное оружие": {
+    "description": "Делает отображение оружия более длинее(крч сами поймете, на видео)",
+    "preview": "vm_fov_scale.mp4",
+    "type": "bool",
+    "file": "client",
+    "key": "graphics.vm_fov_scale",
+    "true_value": "False",
+    "false_value": "True",
+    "default": "True",
+    "best": "False"
+  },
+  "Подсветка объектов": {
+    "description": "Включает контурную подсветку выпавших предметов.",
+    "preview": "outlines.mp4",
+    "type": "bool",
+    "file": "client",
+    "key": "effects.showoutlines",
+    "true_value": "True",
+    "false_value": "False",
+    "default": "False",
+    "best": "True"
+  },
+  "Отключить деформацию ног": {
+    "description": "Отключает деформацию ног, включаем если бесит их тряска",
+    "preview": "footik.mp4",
+    "type": "bool",
+    "file": "client",
+    "key": "player.footik",
+    "true_value": "False",
+    "false_value": "True",
+    "default": "True",
+    "best": "False"
+  },
+  "Отключить затемнение кожи игроков": {
+    "description": "Отключает затемнение кожи игроков.",
+    "preview": "sss.mp4",
+    "type": "bool",
+    "file": "client",
+    "key": "sss.enabled",
+    "true_value": "False",
+    "false_value": "True",
+    "default": "True",
+    "best": "False"
+  },
+  "Автоприсед при прижке на поверхность": {
+    "description": "Автоматически приседает прижке на поверхность.",
+    "preview": "autocrouch.mp4",
+    "type": "bool",
+    "file": "client",
+    "key": "input.autocrouch",
+    "true_value": "True",
+    "false_value": "False",
+    "default": "False",
+    "best": "True"
   }
 }

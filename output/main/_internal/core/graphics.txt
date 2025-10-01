@@ -1,0 +1,2 @@
+graphics.impostorshadows 1
+culling.safemode 0

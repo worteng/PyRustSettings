@@ -1,16 +1,19 @@
+# gui/main_window.py
 from PySide6.QtWidgets import (
     QMainWindow, QTabWidget, QWidget, QVBoxLayout,
     QPushButton, QFileDialog, QLabel, QHBoxLayout, QFrame,
-    QTextEdit, QCheckBox
+    QTextEdit, QCheckBox, QMessageBox
 )
 from PySide6.QtMultimedia import QMediaPlayer
 from PySide6.QtMultimediaWidgets import QVideoWidget
 from PySide6.QtCore import Qt, QObject, QEvent, QUrl
 from PySide6.QtGui import QMovie
-import os, json
+import os
+import json
+from core.config_manager import ConfigManager
+
 
 class HoverFilter(QObject):
-    """Фильтр событий для наведения мыши"""
     def __init__(self, parent, name):
         super().__init__(parent)
         self.parent = parent
@@ -21,42 +24,33 @@ class HoverFilter(QObject):
             self.parent.show_tweak_info(self.name)
         return False
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.checkboxes = {}  # убедись, что есть
 
         self.setWindowTitle("PyRustSettings")
         self.setGeometry(200, 200, 1000, 600)
 
-        # Загружаем tweaks.json
         self.tweaks_info = self.load_tweaks_json()
+        self.cfg_folder = None
+        self.config_manager = None
 
-        # Главное разделение (вкладки + превью)
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         layout = QHBoxLayout(central_widget)
 
-        # Вкладки
         self.tabs = QTabWidget()
         self.tabs.setTabPosition(QTabWidget.North)
-
-        # Добавляем вкладки
         self.tabs.addTab(self.create_home_tab(), "Главное")
         self.tabs.addTab(self.create_tweaks_tab(), "Твики")
-        self.tabs.addTab(QWidget(), "Графика")
-        self.tabs.addTab(QWidget(), "Оптимизация")
-        self.tabs.addTab(QWidget(), "Бинды")
-        self.tabs.addTab(QWidget(), "Прочее")
 
-        # Панель превью справа
         self.preview_panel = self.create_preview_panel()
-
-        # Компоновка
         layout.addWidget(self.tabs, 3)
         layout.addWidget(self.preview_panel, 2)
 
     def load_tweaks_json(self):
-        """Загрузка описаний твиков из core/tweaks.json"""
         json_path = os.path.join("core", "tweaks.json")
         if os.path.exists(json_path):
             with open(json_path, "r", encoding="utf-8") as f:
@@ -64,7 +58,6 @@ class MainWindow(QMainWindow):
         return {}
 
     def create_home_tab(self):
-        """Главная вкладка"""
         tab = QWidget()
         layout = QVBoxLayout(tab)
 
@@ -75,51 +68,53 @@ class MainWindow(QMainWindow):
         self.load_button.clicked.connect(self.load_cfg_folder)
         layout.addWidget(self.load_button)
 
+        self.save_button = QPushButton("Сохранить изменения")
+        self.save_button.clicked.connect(self.save_configs)
+        self.save_button.setEnabled(False)
+        layout.addWidget(self.save_button)
+
         layout.addStretch()
         return tab
 
     def create_tweaks_tab(self):
-        """Вкладка Твики"""
         tab = QWidget()
         layout = QVBoxLayout(tab)
-
         self.checkboxes = {}
 
-        for tweak, data in self.tweaks_info.items():
-            cb = QCheckBox(tweak)
-            cb.installEventFilter(HoverFilter(self, tweak))
-            layout.addWidget(cb)
-            self.checkboxes[tweak] = cb
+        for tweak_name, data in self.tweaks_info.items():
+            if data.get("type") == "bool":
+                cb = QCheckBox(tweak_name)
+                cb.installEventFilter(HoverFilter(self, tweak_name))
+                cb.clicked.connect(
+                    lambda checked, t=tweak_name: self.on_tweak_changed(t, checked)
+                )
+                layout.addWidget(cb)
+                self.checkboxes[tweak_name] = cb
 
         layout.addStretch()
         return tab
 
     def create_preview_panel(self):
-        """Справа панель превью"""
         frame = QFrame()
         frame.setFrameShape(QFrame.StyledPanel)
         layout = QVBoxLayout(frame)
 
-        # Контейнер для медиа (GIF или видео)
         self.media_container = QWidget()
         self.media_layout = QVBoxLayout(self.media_container)
         self.media_layout.setContentsMargins(0, 0, 0, 0)
 
-        # QLabel для GIF
         self.preview_gif_label = QLabel()
         self.preview_gif_label.setAlignment(Qt.AlignCenter)
         self.preview_gif_label.setFixedSize(300, 300)
-        self.preview_gif_label.hide()  # скрыт по умолчанию
+        self.preview_gif_label.hide()
 
-        # QVideoWidget для MP4
         self.video_widget = QVideoWidget()
         self.video_widget.setFixedSize(360, 220)
-        self.video_widget.hide()  # скрыт по умолчанию
+        self.video_widget.hide()
 
         self.media_layout.addWidget(self.preview_gif_label)
         self.media_layout.addWidget(self.video_widget)
 
-        # Текстовое описание
         self.preview_text = QTextEdit()
         self.preview_text.setReadOnly(True)
         self.preview_text.setPlaceholderText("Описание выбранной настройки")
@@ -127,21 +122,18 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.media_container)
         layout.addWidget(self.preview_text)
 
-        # Инициализируем плеер один раз
         self.media_player = QMediaPlayer()
         self.media_player.setVideoOutput(self.video_widget)
 
         return frame
 
     def show_tweak_info(self, tweak_name):
-        """Обновление превью при наведении на чекбокс"""
         tweak_data = self.tweaks_info.get(tweak_name, {})
         description = tweak_data.get("description", "Описание отсутствует.")
-        media_file = tweak_data.get("preview", "")  # ⚠️ Используй "preview", а не "gif"!
+        media_file = tweak_data.get("preview", "")
 
         self.preview_text.setPlainText(description)
 
-        # Остановить всё
         if hasattr(self, '_current_movie') and self._current_movie:
             self._current_movie.stop()
             self._current_movie = None
@@ -161,11 +153,9 @@ class MainWindow(QMainWindow):
             self.preview_gif_label.show()
             return
 
-        # Определяем тип по расширению
         ext = os.path.splitext(media_file)[1].lower()
 
         if ext in ('.gif', '.apng'):
-            # GIF / APNG — через QMovie
             movie = QMovie(media_path)
 
             def on_first_frame():
@@ -185,10 +175,9 @@ class MainWindow(QMainWindow):
             self._current_movie = movie
 
         elif ext in ('.mp4', '.webm', '.avi', '.mov'):
-            # Видео — через QMediaPlayer с бесконечным повтором
             url = QUrl.fromLocalFile(os.path.abspath(media_path))
             self.media_player.setSource(url)
-            self.media_player.setLoops(QMediaPlayer.Loops.Infinite)  # 🔁 Бесконечный повтор
+            self.media_player.setLoops(QMediaPlayer.Loops.Infinite)
             self.video_widget.show()
             self.media_player.play()
 
@@ -196,13 +185,87 @@ class MainWindow(QMainWindow):
             self.preview_gif_label.setText("Неподдерживаемый формат")
             self.preview_gif_label.show()
 
+    def _normalize_file_field(self, raw_file_field):
+        if not raw_file_field:
+            return "client"
+        f = raw_file_field.lower()
+        if f.endswith(".cfg"):
+            f = f[:-4]
+        if f not in ("client", "keys"):
+            return "client"
+        return f
+
     def load_cfg_folder(self):
-        """Выбор папки с cfg"""
         folder = QFileDialog.getExistingDirectory(self, "Выберите папку Rust")
         if folder:
             cfg_path = os.path.join(folder, "cfg")
             if os.path.exists(cfg_path):
+                self.cfg_folder = cfg_path
                 self.path_label.setText(f"Найдена папка cfg: {cfg_path}")
-                # TODO: здесь подключим чтение client.cfg и keys.cfg
+                self.config_manager = ConfigManager(cfg_path)
+                self.sync_checkboxes_with_config()
+                self.save_button.setEnabled(True)
             else:
                 self.path_label.setText("В папке Rust не найдено cfg")
+        else:
+            print("Папка не выбрана")
+
+    def sync_checkboxes_with_config(self):
+        for tweak_name, cb in self.checkboxes.items():
+            tweak_data = self.tweaks_info.get(tweak_name, {})
+            if tweak_data.get("type") != "bool":
+                continue
+
+            key = tweak_data.get("key")
+            file_field = self._normalize_file_field(tweak_data.get("file"))
+            current_value = self.config_manager.get_value(key, file_field)
+
+            true_val = tweak_data.get("true_value", "1")
+            best_val = tweak_data.get("best")
+            default_val = tweak_data.get("default")
+
+            # compare raw strings, but normalize whitespace/case a bit
+            cur = (current_value or "").strip()
+            tv = (true_val or "").strip()
+            bv = (best_val or "").strip()
+
+            is_enabled = False
+            if cur != "":
+                if cur == tv or (bv and cur == bv):
+                    is_enabled = True
+            else:
+                # If not present, fallback to default
+                if default_val is not None and str(default_val).strip() == tv:
+                    is_enabled = True
+
+            cb.blockSignals(True)
+            cb.setChecked(is_enabled)
+            cb.blockSignals(False)
+
+    def on_tweak_changed(self, tweak_name: str, checked: bool):
+        if not self.config_manager:
+            return
+
+        tweak_data = self.tweaks_info.get(tweak_name)
+        if not tweak_data or tweak_data.get("type") != "bool":
+            return
+
+        key = tweak_data["key"]
+        file_field = self._normalize_file_field(tweak_data.get("file"))
+
+        if checked:
+            new_value = tweak_data.get("best", tweak_data.get("true_value", "1"))
+        else:
+            new_value = tweak_data.get("false_value", "0")
+
+        self.config_manager.set_value(key, new_value, file_field)
+
+    def save_configs(self):
+        if not self.config_manager:
+            return
+        try:
+            self.config_manager.save()
+            # не перечитываем файл, оставляем данные в памяти
+            QMessageBox.information(self, "Успех", "Конфигурация успешно сохранена!")
+        except Exception as e:
+            QMessageBox.critical(self, "Ошибка", f"Не удалось сохранить:\n{str(e)}")
