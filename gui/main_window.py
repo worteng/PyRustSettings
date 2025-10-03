@@ -11,7 +11,7 @@ from PySide6.QtGui import QMovie
 import os
 import json
 from core.config_manager import ConfigManager
-
+from core.utils import resource_path
 
 class HoverFilter(QObject):
     def __init__(self, parent, name):
@@ -51,7 +51,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.preview_panel, 2)
 
     def load_tweaks_json(self):
-        json_path = os.path.join("core", "tweaks.json")
+        json_path = resource_path(os.path.join("core", "tweaks.json"))
         if os.path.exists(json_path):
             with open(json_path, "r", encoding="utf-8") as f:
                 return json.load(f)
@@ -147,7 +147,7 @@ class MainWindow(QMainWindow):
             self.preview_gif_label.show()
             return
 
-        media_path = os.path.join("assets", "graphics", media_file)
+        media_path = resource_path(os.path.join("assets", "graphics", media_file))
         if not os.path.exists(media_path):
             self.preview_gif_label.setText(f"[Файл не найден:\n{media_path}]")
             self.preview_gif_label.show()

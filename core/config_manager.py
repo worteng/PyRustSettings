@@ -131,7 +131,7 @@ class ConfigManager:
 
 
     def _format_client_line(self, key: str, value: str) -> str:
-        # Числа (целые и дробные) — без кавычек
+        # Числа (целые и дробные) — без кавычекhb.ktyi
         if self._is_number(value):
             return f"{key} {value}\n"
         # Всё остальное — в кавычках, включая "True", "False", "on", "off" и т.д.

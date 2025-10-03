@@ -1,13 +1,15 @@
 import os
 
-# Путь к папке с медиафайлами
-folder = os.path.join("assets", "graphics")
+def print_directory_tree(startpath, indent=''):
+    for item in sorted(os.listdir(startpath)):
+        path = os.path.join(startpath, item)
+        if os.path.isdir(path):
+            print(f"{indent}📁 {item}/")
+            print_directory_tree(path, indent + "  ")
+        else:
+            print(f"{indent}📄 {item}")
 
-# Проверяем, существует ли папка
-if not os.path.exists(folder):
-    print(f"Папка не найдена: {folder}")
-else:
-    # Проходим по всем файлам в папке
-    for filename in os.listdir(folder):
-        if filename.lower().endswith(".mp4"):
-            print(filename)
+if __name__ == "__main__":
+    project_root = "."  # Текущая папка
+    print(f"Структура проекта ({os.path.abspath(project_root)}):")
+    print_directory_tree(project_root)
